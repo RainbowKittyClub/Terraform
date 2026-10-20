@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -85,8 +86,7 @@ public class SmallLogBlock extends BareSmallLogBlock {
 	}
 
 	@Override
-	public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-		ItemStack held = player.getUseItem();
+	public InteractionResult useItemOn(ItemStack held, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 
 		if (held.getCount() >= 1 && held.getItem() == Item.BY_BLOCK.get(leaves) && !state.getValue(HAS_LEAVES)) {
 			if (!player.isCreative()) {
@@ -129,7 +129,7 @@ public class SmallLogBlock extends BareSmallLogBlock {
 			return InteractionResult.SUCCESS;
 		}
 
-		return InteractionResult.FAIL;
+		return super.useItemOn(held, state, level, pos, player, hand, hitResult);
 	}
 
 	@Override
