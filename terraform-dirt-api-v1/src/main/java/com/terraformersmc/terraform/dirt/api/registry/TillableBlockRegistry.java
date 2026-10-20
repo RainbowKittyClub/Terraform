@@ -1,12 +1,7 @@
 package com.terraformersmc.terraform.dirt.api.registry;
 
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import net.minecraft.world.item.HoeItem;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import com.mojang.datafixers.util.Pair;
 
 import com.terraformersmc.terraform.dirt.impl.registry.TillableBlockRegistryImpl;
 
@@ -22,19 +17,9 @@ public final class TillableBlockRegistry {
 	}
 
 	/**
-	 * Adds a custom tillable block mapping.
+	 * Adds a custom tillable block mapping to the hoe's block transformer. The block is tilled only with air above it.
 	 * <p/>
-	 * Note that you don't need to call this yourself if you're already using {@link TerraformDirtRegistry}.
-	 *
-	 * @param block the block being tilled
-	 * @param pair the interaction between the blocks
-	 */
-	public static void add(Block block, Pair<Predicate<UseOnContext>, Consumer<UseOnContext>> pair) {
-		TillableBlockRegistryImpl.add(block, pair);
-	}
-	
-	/**
-	 * Adds a custom tillable block mapping.
+	 * The block must not be in {@code #minecraft:turns_into_farmland}, since vanilla's own hoe entry is checked first.
 	 * <p/>
 	 * Note that you don't need to call this yourself if you're already using {@link TerraformDirtRegistry}.
 	 *
@@ -42,6 +27,6 @@ public final class TillableBlockRegistry {
 	 * @param state the block to be replaced with
 	 */
 	public static void add(Block block, BlockState state) {
-		TillableBlockRegistryImpl.add(block, Pair.of(HoeItem::onlyIfAirAbove, HoeItem.changeIntoState(state)));
+		TillableBlockRegistryImpl.add(block, state);
 	}
 }
