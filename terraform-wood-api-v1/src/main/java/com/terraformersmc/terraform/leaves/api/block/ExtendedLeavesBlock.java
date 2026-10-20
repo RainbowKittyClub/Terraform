@@ -22,7 +22,9 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FallingParticlesLeavesBlock;
 import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.sounds.AmbientLeavesBlockSoundPlayer;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -51,7 +53,7 @@ import net.minecraft.world.level.material.Fluids;
  * The DECAY_DISTANCE property used by LeavesBlock is complemented by our EXTENDED_DISTANCE property.
  */
 @SuppressWarnings({"unused", "OptionalUsedAsFieldOrParameterType"})
-public class ExtendedLeavesBlock extends LeavesBlock {
+public class ExtendedLeavesBlock extends FallingParticlesLeavesBlock {
 	public static final MapCodec<ExtendedLeavesBlock> CODEC = RecordCodecBuilder.mapCodec(
 			(instance) -> instance.group(
 							ExtraCodecs.floatRange(0.0f, 1.0f).fieldOf("leaf_particle_chance")
@@ -84,7 +86,7 @@ public class ExtendedLeavesBlock extends LeavesBlock {
 	 * @param properties The block properties
 	 */
 	public ExtendedLeavesBlock(float leafParticleChance, Optional<ParticleOptions> leafParticleOptions, boolean opti, boolean transparent, BlockBehaviour.Properties properties) {
-		super(leafParticleChance, properties);
+		super(leafParticleChance, AmbientLeavesBlockSoundPlayer.noAmbientSound(), properties);
 
 		this.leafParticleOptions = leafParticleOptions;
 		this.opti = opti;

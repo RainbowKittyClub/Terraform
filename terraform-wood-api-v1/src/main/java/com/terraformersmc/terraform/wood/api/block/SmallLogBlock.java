@@ -1,5 +1,6 @@
 package com.terraformersmc.terraform.wood.api.block;
 
+import com.terraformersmc.terraform.wood.mixin.InvokerFallingParticlesLeavesBlock;
 import com.terraformersmc.terraform.wood.mixin.InvokerLeavesBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.FallingParticlesLeavesBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -57,7 +59,7 @@ public class SmallLogBlock extends BareSmallLogBlock {
 	public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
 		if (level.isClientSide() && state.getValue(HAS_LEAVES)) {
 			/*
-			 * Below here this is a copy of LeavesBlock.animateTick() from vanilla.
+			 * Below here this is a copy of LeavesBlock.animateTick() and FallingParticlesLeavesBlock.animateTick() from vanilla.
 			 * This is because some other mods crash when we call the vanilla method on a non-LeavesBlock.
 			 * To merge changes, you should typically be able to just replace with a copy from vanilla and
 			 * fix up any access issues with invokers or access wideners.
@@ -68,8 +70,11 @@ public class SmallLogBlock extends BareSmallLogBlock {
 			BlockState belowState = level.getBlockState(below);
 
 			InvokerLeavesBlock.callMakeDrippingWaterParticles(level, pos, random, belowState, below);
-			//noinspection ReferenceToMixin
-			((InvokerLeavesBlock) this.leaves).callMakeFallingLeavesParticles(level, pos, random, belowState, below);
+			// Only some leaves drop falling leaf particles (vanilla spruce leaves do not).
+			if (this.leaves instanceof FallingParticlesLeavesBlock) {
+				//noinspection ReferenceToMixin
+				((InvokerFallingParticlesLeavesBlock) this.leaves).callMakeFallingLeavesParticles(level, pos, random);
+			}
 		}
 	}
 
