@@ -15,7 +15,4 @@ public interface InvokerLeavesBlock {
 	static void callMakeDrippingWaterParticles(Level level, BlockPos pos, RandomSource random, BlockState belowState, BlockPos below) {
 		throw new UnsupportedOperationException();
 	}
-
-	@Invoker
-	void callMakeFallingLeavesParticles(Level level, BlockPos pos, RandomSource random, BlockState belowState, BlockPos below);
 }

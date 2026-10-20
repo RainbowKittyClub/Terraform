@@ -9,7 +9,8 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.ParticleUtils;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.FallingParticlesLeavesBlock;
+import net.minecraft.world.level.block.sounds.AmbientLeavesBlockSoundPlayer;
 
 /**
  * This leaves block provides an easy way to implement non-tinted colored leaves with non-tinted colored particles.
@@ -18,7 +19,7 @@ import net.minecraft.world.level.block.LeavesBlock;
  * The {@code leaf_particle_color} field accepts an RGB block color which will be applied to the particles.
  */
 @SuppressWarnings("unused")
-public class ColoredParticleLeavesBlock extends LeavesBlock {
+public class ColoredParticleLeavesBlock extends FallingParticlesLeavesBlock {
 	private final int leafParticleColor;
 
 	public static final MapCodec<ColoredParticleLeavesBlock> CODEC = RecordCodecBuilder.mapCodec(
@@ -39,7 +40,7 @@ public class ColoredParticleLeavesBlock extends LeavesBlock {
 	 * @param properties The block properties
 	 */
 	public ColoredParticleLeavesBlock(float leafParticleChance, int blockColor, Properties properties) {
-		super(leafParticleChance, properties);
+		super(leafParticleChance, AmbientLeavesBlockSoundPlayer.noAmbientSound(), properties);
 
 		this.leafParticleColor = blockColor;
 	}
