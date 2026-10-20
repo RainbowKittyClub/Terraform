@@ -7,7 +7,6 @@
     "MixinAnimal",
     "MixinCropBlock",
     "MixinEatBlockGoal",
-    "MixinFeature",
     "MixinPlantingOnFarmland",
     "MixinRabbitRaidGardenGoal",
     "MixinSpreadingSnowyBlock",
