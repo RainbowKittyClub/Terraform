@@ -1,8 +1,5 @@
 package com.terraformersmc.terraform.leaves.api.block;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.terraformersmc.terraform.wood.api.block.SmallLogBlock;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -13,7 +10,6 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.ParticleUtils;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -37,7 +33,7 @@ import net.minecraft.world.level.material.Fluids;
  * A leaves block with extended range, permitting leaves to be as far as 13 blocks away from the tree rather than the
  * limit of 6 blocks imposed by vanilla leaves.  Enabling the opti-leaves feature can reduce geometry and give better
  * rendering performance in dense forests of large trees.  By default, extended leaves are transparent (do not block
- * light at all).  If the optional leaf_particle field is present, the custom particle is used; otherwise a tinted
+ * light at all).  If the optional leaf particle options are present, the custom particle is used; otherwise a tinted
  * falling leaf particle is used.
  * </p><p>
  * Be aware when using the extended leaf range, there are now two distance properties which combine to provide the
@@ -54,20 +50,6 @@ import net.minecraft.world.level.material.Fluids;
  */
 @SuppressWarnings({"unused", "OptionalUsedAsFieldOrParameterType"})
 public class ExtendedLeavesBlock extends FallingParticlesLeavesBlock {
-	public static final MapCodec<ExtendedLeavesBlock> CODEC = RecordCodecBuilder.mapCodec(
-			(instance) -> instance.group(
-							ExtraCodecs.floatRange(0.0f, 1.0f).fieldOf("leaf_particle_chance")
-									.forGetter(arg -> arg.leafParticleChance),
-							ParticleTypes.CODEC.optionalFieldOf("leaf_particle")
-									.forGetter(arg -> arg.leafParticleOptions),
-							Codec.BOOL.fieldOf("opti")
-									.forGetter(arg -> arg.opti),
-							Codec.BOOL.fieldOf("transparent")
-									.forGetter(arg -> arg.transparent),
-							ExtendedLeavesBlock.propertiesCodec()
-					)
-					.apply(instance, ExtendedLeavesBlock::new));
-
 	public static final int MAX_EXTENDED_DISTANCE = 7;
 	public static final int MAX_TOTAL_DISTANCE = DECAY_DISTANCE + MAX_EXTENDED_DISTANCE;
 	public static final IntegerProperty EXTENDED_DISTANCE = IntegerProperty.create("extended_distance", 0, MAX_EXTENDED_DISTANCE);
@@ -112,10 +94,6 @@ public class ExtendedLeavesBlock extends FallingParticlesLeavesBlock {
 	 */
 	public ExtendedLeavesBlock(BlockBehaviour.Properties properties) {
 		this(0.01f, Optional.empty(), false, true, properties);
-	}
-
-	public MapCodec<? extends ExtendedLeavesBlock> codec() {
-		return CODEC;
 	}
 
 	@Override
