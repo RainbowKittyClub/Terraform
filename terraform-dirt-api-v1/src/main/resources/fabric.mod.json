@@ -44,7 +44,8 @@
     }
   },
   "depends": {
-    "fabricloader": ">=0.15"
+    "fabricloader": ">=0.15",
+    "fabric-item-api-v1": ">=14.7.0"
   },
   "breaks": {
     "moretags": "*"

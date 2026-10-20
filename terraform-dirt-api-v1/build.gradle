@@ -1,1 +1,5 @@
 base.archivesName = "terraform-dirt-api-v1"
+
+dependencies {
+	implementation fabricApi.module("fabric-item-api-v1", project.fabric_version)
+}
