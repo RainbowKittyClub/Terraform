@@ -19,6 +19,12 @@ public class TerraformDirtRegistryImpl {
 
 		TYPES.add(blocks);
 		BY_GRASS_BLOCK.put(blocks.grassBlock(), blocks);
+
+		// Without a farmland block there is nothing to till into.
+		if (blocks.farmBlock() == null) {
+			return blocks;
+		}
+
 		BY_FARM_BLOCK.put(blocks.farmBlock(), blocks);
 
 		BlockState farmland = blocks.farmBlock().defaultBlockState();
