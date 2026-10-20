@@ -1,5 +1,6 @@
 package com.terraformersmc.terraform.wood.api.block;
 
+import com.terraformersmc.terraform.wood.mixin.AccessorLeavesBlock;
 import com.terraformersmc.terraform.wood.mixin.InvokerFallingParticlesLeavesBlock;
 import com.terraformersmc.terraform.wood.mixin.InvokerLeavesBlock;
 import net.minecraft.core.BlockPos;
@@ -74,6 +75,11 @@ public class SmallLogBlock extends BareSmallLogBlock {
 			if (this.leaves instanceof FallingParticlesLeavesBlock) {
 				//noinspection ReferenceToMixin
 				((InvokerFallingParticlesLeavesBlock) this.leaves).callMakeFallingLeavesParticles(level, pos, random);
+			}
+			// Only some leaves have an ambient sound (vanilla poplar leaves do).
+			if (this.leaves instanceof LeavesBlock) {
+				//noinspection ReferenceToMixin
+				((AccessorLeavesBlock) this.leaves).getAmbientLeavesBlockSoundPlayer().playAmbientLeavesSounds(level, pos, this.leaves, random);
 			}
 		}
 	}
