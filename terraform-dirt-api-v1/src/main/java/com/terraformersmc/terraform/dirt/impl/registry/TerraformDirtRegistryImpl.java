@@ -21,9 +21,14 @@ public class TerraformDirtRegistryImpl {
 		BY_GRASS_BLOCK.put(blocks.grassBlock(), blocks);
 		BY_FARM_BLOCK.put(blocks.farmBlock(), blocks);
 
-		TillableBlockRegistry.add(blocks.dirtBlock(), blocks.farmBlock().defaultBlockState());
-		TillableBlockRegistry.add(blocks.grassBlock(), blocks.farmBlock().defaultBlockState());
-		TillableBlockRegistry.add(blocks.dirtPathBlock(), blocks.farmBlock().defaultBlockState());
+		BlockState farmland = blocks.farmBlock().defaultBlockState();
+		TillableBlockRegistry.add(blocks.dirtBlock(), farmland);
+		if (blocks.grassBlock() != null) {
+			TillableBlockRegistry.add(blocks.grassBlock(), farmland);
+		}
+		if (blocks.dirtPathBlock() != null) {
+			TillableBlockRegistry.add(blocks.dirtPathBlock(), farmland);
+		}
 
 		return blocks;
 	}
