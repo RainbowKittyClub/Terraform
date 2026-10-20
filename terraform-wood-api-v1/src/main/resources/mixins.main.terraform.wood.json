@@ -3,6 +3,7 @@
   "package": "com.terraformersmc.terraform.wood.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "AccessorLeavesBlock",
     "InvokerFallingParticlesLeavesBlock",
     "InvokerLeavesBlock"
   ],
