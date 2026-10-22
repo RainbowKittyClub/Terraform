@@ -13,6 +13,7 @@ rootProject.name = "terraform-api"
 include 'terraform-biome-remapper-api-v1'
 include 'terraform-config-api-v1'
 include 'terraform-dirt-api-v1'
+include 'terraform-position-data-api-v1'
 include 'terraform-shapes-api-v1'
 include 'terraform-surfaces-api-v1'
 include 'terraform-tree-api-v1'

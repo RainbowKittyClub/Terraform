@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "terraform-position-data-api-v1",
+  "name": "Terraform Position Data API (v1)",
+  "version": "$version",
+  "environment": "*",
+  "license": "LGPL-3.0-only",
+  "icon": "assets/terraform-position-data-api-v1/icon.png",
+  "contact": {
+    "homepage": "https://github.com/TerraformersMC/Terraform",
+    "issues": "https://github.com/TerraformersMC/Terraform/issues"
+  },
+  "authors": [
+    "Prospector",
+    "coderbot16",
+    "TerraformersMC"
+  ],
+  "depends": {
+    "fabric-data-attachment-api-v1": "*"
+  },
+  "description": "Stores data for single block positions, saved with their chunk and carried by pistons",
+  "custom": {
+    "modmenu:api": true,
+    "modmenu": {
+      "parent": {
+        "id": "terraform-api",
+        "name": "Terraform API",
+        "description": "Modular core library that expands on the hooks that Fabric API provides",
+        "icon": "assets/terraform-position-data-api-v1/icon.png",
+        "badges": [
+          "library"
+        ]
+      },
+      "badges": [
+        "library"
+      ],
+      "links": {
+        "modmenu.discord": "https://discord.gg/jEGF5fb"
+      }
+    }
+  },
+  "mixins": [
+    "mixins.main.terraform.positiondata.json"
+  ]
+}

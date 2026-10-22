@@ -1,0 +1,5 @@
+base.archivesName = "terraform-position-data-api-v1"
+
+dependencies {
+	implementation fabricApi.module("fabric-data-attachment-api-v1", project.fabric_version)
+}
