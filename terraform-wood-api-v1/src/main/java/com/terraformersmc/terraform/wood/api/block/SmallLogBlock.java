@@ -218,6 +218,12 @@ public class SmallLogBlock extends BareSmallLogBlock {
 		return this.collisionShapes[this.getShapeIndex(state)];
 	}
 
+	// Like any leaves block, a leafy log holds up no torch, rail or button
+	@Override
+	protected VoxelShape getBlockSupportShape(BlockState state, BlockGetter level, BlockPos pos) {
+		return state.getValue(HAS_LEAVES) ? Shapes.empty() : super.getBlockSupportShape(state, level, pos);
+	}
+
 	@Override
 	public VoxelShape getVisualShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
 		return this.collisionShapes[this.getShapeIndex(state)];
