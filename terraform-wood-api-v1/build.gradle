@@ -1,6 +1,7 @@
 base.archivesName = "terraform-wood-api-v1"
 
 dependencies {
+	implementation project(":terraform-position-data-api-v1")
 	implementation fabricApi.module("fabric-content-registries-v0", project.fabric_version)
 	implementation fabricApi.module("fabric-networking-api-v1", project.fabric_version)
 	implementation fabricApi.module("fabric-object-builder-api-v1", project.fabric_version)

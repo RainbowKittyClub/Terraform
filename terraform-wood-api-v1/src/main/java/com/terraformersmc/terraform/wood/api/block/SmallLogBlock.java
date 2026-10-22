@@ -1,21 +1,28 @@
 package com.terraformersmc.terraform.wood.api.block;
 
+import com.terraformersmc.terraform.positiondata.api.PositionData;
 import com.terraformersmc.terraform.wood.mixin.AccessorLeavesBlock;
 import com.terraformersmc.terraform.wood.mixin.InvokerFallingParticlesLeavesBlock;
 import com.terraformersmc.terraform.wood.mixin.InvokerLeavesBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FallingParticlesLeavesBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -38,6 +45,16 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class SmallLogBlock extends BareSmallLogBlock {
 	public static final BooleanProperty HAS_LEAVES = BooleanProperty.create("has_leaves");
 
+	/**
+	 * The leaves a leafy small log carries when they aren't its own, for example birch leaves on a sakura log.
+	 * Stripping keeps them, and a piston carries them along.
+	 */
+	public static final PositionData<Block> LEAVES = PositionData.register(
+			Identifier.fromNamespaceAndPath("terraform", "small_log_leaves"),
+			BuiltInRegistries.BLOCK.byNameCodec(),
+			state -> state.getBlock() instanceof SmallLogBlock && state.getValue(HAS_LEAVES)
+	);
+
 	private final Block leaves;
 
 	public SmallLogBlock(Block leaves, Properties properties) {
@@ -55,6 +72,17 @@ public class SmallLogBlock extends BareSmallLogBlock {
 		);
 
 		this.leaves = leaves;
+	}
+
+	/** This log's own leaves, the ones it grows with. */
+	public Block getLeaves() {
+		return this.leaves;
+	}
+
+	/** The leaves a leafy log at this position carries: the stored ones, else its own. */
+	public Block leavesAt(BlockGetter level, BlockPos pos) {
+		Block stored = LEAVES.get(level, pos);
+		return stored != null ? stored : this.leaves;
 	}
 
 	@Override
@@ -88,12 +116,19 @@ public class SmallLogBlock extends BareSmallLogBlock {
 	@Override
 	public InteractionResult useItemOn(ItemStack held, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 
-		if (held.getCount() >= 1 && held.getItem() == Item.BY_BLOCK.get(leaves) && !state.getValue(HAS_LEAVES)) {
+		// A leafy log is a leaves block on the outside, which no axe, shovel or hoe transforms
+		if (state.getValue(HAS_LEAVES) && held.has(DataComponents.BLOCK_TRANSFORMER)) {
+			return InteractionResult.CONSUME;
+		}
+
+		// Any leaves leaf a bare log; ones other than its own are stored for the position
+		Block used = held.getItem() instanceof BlockItem item ? item.getBlock() : Blocks.AIR;
+		if (held.getCount() >= 1 && used.defaultBlockState().is(BlockTags.LEAVES) && !state.getValue(HAS_LEAVES)) {
 			if (!player.isCreative()) {
 				held.shrink(1);
 			}
 
-			SoundType sounds = leaves.defaultBlockState().getSoundType();
+			SoundType sounds = used.defaultBlockState().getSoundType();
 			level.playSound(player, pos, sounds.getPlaceSound(), SoundSource.BLOCKS, (sounds.getVolume() + 1.0F) / 2.0F, sounds.getPitch() * 0.8F);
 
 			BlockState previous = state;
@@ -125,11 +160,18 @@ public class SmallLogBlock extends BareSmallLogBlock {
 			}
 
 			level.setBlockAndUpdate(pos, pushEntitiesUp(previous, state, level, pos));
+			LEAVES.set(level, pos, used == this.leaves ? null : used);
 
 			return InteractionResult.SUCCESS;
 		}
 
 		return super.useItemOn(held, state, level, pos, player, hand, hitResult);
+	}
+
+	// Picking a leafy log picks its leaves, as for any leaves block
+	@Override
+	protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
+		return state.getValue(HAS_LEAVES) ? new ItemStack(this.leavesAt(level, pos)) : super.getCloneItemStack(level, pos, state, includeData);
 	}
 
 	@Override

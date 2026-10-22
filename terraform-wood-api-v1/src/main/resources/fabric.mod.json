@@ -22,7 +22,8 @@
     "fabric-object-builder-api-v1": "*",
     "fabric-registry-sync-v0": "*",
     "fabric-rendering-v1": "*",
-    "fabric-resource-loader-v0": "*"
+    "fabric-resource-loader-v0": "*",
+    "terraform-position-data-api-v1": "*"
   },
   "authors": [
     "Prospector",

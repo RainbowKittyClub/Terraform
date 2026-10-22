@@ -5,7 +5,9 @@
   "mixins": [
     "AccessorLeavesBlock",
     "InvokerFallingParticlesLeavesBlock",
-    "InvokerLeavesBlock"
+    "InvokerLeavesBlock",
+    "MixinBlockStateBase",
+    "MixinPistonBaseBlock"
   ],
   "injectors": {
     "defaultRequire": 1
