@@ -5,7 +5,6 @@ import com.terraformersmc.terraform.wood.mixin.AccessorLeavesBlock;
 import com.terraformersmc.terraform.wood.mixin.InvokerFallingParticlesLeavesBlock;
 import com.terraformersmc.terraform.wood.mixin.InvokerLeavesBlock;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -47,7 +46,7 @@ public class SmallLogBlock extends BareSmallLogBlock {
 
 	/**
 	 * The leaves a leafy small log carries when they aren't its own, for example birch leaves on a sakura log.
-	 * Stripping keeps them, and a piston carries them along.
+	 * They stay while the block remains a leafy small log; a piston breaks them off before it moves the log.
 	 */
 	public static final PositionData<Block> LEAVES = PositionData.register(
 			Identifier.fromNamespaceAndPath("terraform", "small_log_leaves"),
@@ -115,11 +114,6 @@ public class SmallLogBlock extends BareSmallLogBlock {
 
 	@Override
 	public InteractionResult useItemOn(ItemStack held, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-
-		// A leafy log is a leaves block on the outside, which no axe, shovel or hoe transforms
-		if (state.getValue(HAS_LEAVES) && held.has(DataComponents.BLOCK_TRANSFORMER)) {
-			return InteractionResult.CONSUME;
-		}
 
 		// Any leaves leaf a bare log; ones other than its own are stored for the position
 		Block used = held.getItem() instanceof BlockItem item ? item.getBlock() : Blocks.AIR;

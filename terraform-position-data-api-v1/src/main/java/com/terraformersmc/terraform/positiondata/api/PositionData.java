@@ -1,6 +1,7 @@
 package com.terraformersmc.terraform.positiondata.api;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.terraformersmc.terraform.positiondata.impl.PositionDataImpl;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
@@ -39,7 +40,7 @@ public final class PositionData<T> {
 	private PositionData(Identifier id, Codec<T> codec, Predicate<BlockState> holds) {
 		this.id = id;
 		this.holds = holds;
-		this.type = AttachmentRegistry.create(id, builder -> builder.persistent(mapCodec(codec)));
+		this.type = AttachmentRegistry.create(id, builder -> builder.persistent(mapCodec(id, codec)));
 	}
 
 	/**
@@ -80,11 +81,14 @@ public final class PositionData<T> {
 
 	/**
 	 * Sets the value at this position, or removes it when the value is null. Loads the chunk if needed.
-	 * Does nothing on a client.
+	 * Does nothing on a client, and stores nothing where the block doesn't hold this kind.
 	 */
 	public void set(Level level, BlockPos pos, @Nullable T value) {
 		if (!level.isClientSide()) {
-			this.put(level.getChunkAt(pos), pos, value);
+			ChunkAccess chunk = level.getChunkAt(pos);
+			if (value == null || this.holds.test(chunk.getBlockState(pos))) {
+				this.put(chunk, pos, value);
+			}
 		}
 	}
 
@@ -148,26 +152,29 @@ public final class PositionData<T> {
 		return null;
 	}
 
-	private static <T> Codec<Map<Integer, T>> mapCodec(Codec<T> valueCodec) {
+	private static <T> Codec<Map<Integer, T>> mapCodec(Identifier id, Codec<T> valueCodec) {
 		Codec<Entry<T>> entry = RecordCodecBuilder.create(instance -> instance.group(
 				Codec.INT.fieldOf("pos").forGetter(Entry::pos),
 				valueCodec.lenientOptionalFieldOf("value").forGetter(Entry::value)
 		).apply(instance, Entry::new));
 
-		return entry.listOf().xmap(PositionData::toMap, PositionData::toEntries);
+		return entry.listOf().flatXmap(entries -> toMap(id, entries), values -> DataResult.success(toEntries(values)));
 	}
 
-	private static <T> Map<Integer, T> toMap(List<Entry<T>> entries) {
+	// With no value left the attachment is skipped, so the chunk stops saving an empty one
+	private static <T> DataResult<Map<Integer, T>> toMap(Identifier id, List<Entry<T>> entries) {
 		Map<Integer, T> values = new HashMap<>();
 		for (Entry<T> entry : entries) {
 			entry.value().ifPresent(value -> values.put(entry.pos(), value));
 		}
 
-		return Map.copyOf(values);
+		return values.isEmpty() ? DataResult.error(() -> "No value of " + id + " left to load") : DataResult.success(Map.copyOf(values));
 	}
 
+	// Sorted by position, so the same values always save the same bytes
 	private static <T> List<Entry<T>> toEntries(Map<Integer, T> values) {
 		return values.entrySet().stream()
+				.sorted(Map.Entry.comparingByKey())
 				.map(entry -> new Entry<>(entry.getKey(), Optional.of(entry.getValue())))
 				.toList();
 	}

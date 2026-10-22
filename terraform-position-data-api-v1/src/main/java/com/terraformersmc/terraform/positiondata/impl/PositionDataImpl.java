@@ -8,29 +8,32 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class PositionDataImpl {
-	private static final List<PositionData<?>> KINDS = new CopyOnWriteArrayList<>();
+	// An array, read on every block change, and replaced on the rare register
+	private static volatile PositionData<?>[] kinds = new PositionData<?>[0];
 
 	private PositionDataImpl() {
 	}
 
-	public static void register(PositionData<?> data) {
-		KINDS.add(data);
+	public static synchronized void register(PositionData<?> data) {
+		PositionData<?>[] next = Arrays.copyOf(kinds, kinds.length + 1);
+		next[kinds.length] = data;
+		kinds = next;
 	}
 
-	/** Drops every value at pos whose kind the new state doesn't hold; a moving piston keeps its block's. */
-	public static void onBlockChanged(LevelChunk chunk, BlockPos pos, BlockState state) {
-		if (state.is(Blocks.MOVING_PISTON)) {
-			return;
-		}
-
-		for (PositionData<?> kind : KINDS) {
-			if (!kind.holds(state)) {
+	/**
+	 * Drops every value at pos unless both the old and the new state hold its kind, so a stale value never
+	 * reaches a new holder; a block landing from a moving piston keeps the values placed for it.
+	 */
+	public static void onBlockChanged(LevelChunk chunk, BlockPos pos, BlockState old, BlockState state) {
+		boolean landed = old.is(Blocks.MOVING_PISTON);
+		for (PositionData<?> kind : kinds) {
+			if (!kind.holds(state) || !landed && !kind.holds(old)) {
 				kind.put(chunk, pos, null);
 			}
 		}
@@ -41,7 +44,7 @@ public final class PositionDataImpl {
 		Carried carried = new Carried();
 		for (BlockPos pos : toPush) {
 			LevelChunk chunk = level.getChunkAt(pos);
-			for (PositionData<?> kind : KINDS) {
+			for (PositionData<?> kind : kinds) {
 				Object value = kind.getRaw(chunk, pos);
 				if (value != null) {
 					kind.put(chunk, pos, null);

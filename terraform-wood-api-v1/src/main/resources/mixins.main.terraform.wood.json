@@ -7,6 +7,7 @@
     "InvokerFallingParticlesLeavesBlock",
     "InvokerLeavesBlock",
     "MixinBlockStateBase",
+    "MixinBlockTransformer",
     "MixinPistonBaseBlock"
   ],
   "injectors": {
