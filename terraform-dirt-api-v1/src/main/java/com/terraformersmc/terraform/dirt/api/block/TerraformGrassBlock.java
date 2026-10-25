@@ -56,7 +56,7 @@ public class TerraformGrassBlock extends GrassBlock {
 		}
 	}
 
-	private static boolean canBeGrass(BlockState state, LevelReader level, BlockPos pos) {
+	static boolean canBeGrass(BlockState state, LevelReader level, BlockPos pos) {
 		BlockPos above = pos.above();
 		BlockState aboveState = level.getBlockState(above);
 

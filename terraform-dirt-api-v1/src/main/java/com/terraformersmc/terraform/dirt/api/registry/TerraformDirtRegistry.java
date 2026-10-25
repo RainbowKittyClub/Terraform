@@ -70,4 +70,15 @@ public final class TerraformDirtRegistry {
 	public static Optional<DirtBlocks> getByFarmBlock(Block farmBlock) {
 		return TerraformDirtRegistryImpl.getByFarmBlock(farmBlock);
 	}
+
+	/**
+	 * Return the corresponding DirtBlocks if the given mycelium block is any Terraform API dirt variant;
+	 * otherwise returns {@link Optional#empty()}.
+	 *
+	 * @param myceliumBlock the mycelium block to check
+	 * @return optional of the matching {@link DirtBlocks} if any
+	 */
+	public static Optional<DirtBlocks> getByMyceliumBlock(Block myceliumBlock) {
+		return TerraformDirtRegistryImpl.getByMyceliumBlock(myceliumBlock);
+	}
 }

@@ -13,12 +13,26 @@ public class TerraformDirtRegistryImpl {
 	private static final List<DirtBlocks> TYPES = new ArrayList<>();
 	private static final Map<Block, DirtBlocks> BY_GRASS_BLOCK = new HashMap<>();
 	private static final Map<Block, DirtBlocks> BY_FARM_BLOCK = new HashMap<>();
+	private static final Map<Block, DirtBlocks> BY_MYCELIUM_BLOCK = new HashMap<>();
 
 	public static DirtBlocks register(DirtBlocks blocks) {
 		Objects.requireNonNull(blocks);
 
 		TYPES.add(blocks);
 		BY_GRASS_BLOCK.put(blocks.grassBlock(), blocks);
+
+		if (blocks.myceliumBlock() != null) {
+			BY_MYCELIUM_BLOCK.put(blocks.myceliumBlock(), blocks);
+		}
+
+		// Hoes strip coarse and rooted dirt back to plain dirt, whether or not there is farmland to till into.
+		BlockState dirt = blocks.dirtBlock().defaultBlockState();
+		if (blocks.coarseDirtBlock() != null) {
+			TillableBlockRegistry.add(blocks.coarseDirtBlock(), dirt);
+		}
+		if (blocks.rootedDirtBlock() != null) {
+			TillableBlockRegistry.add(blocks.rootedDirtBlock(), dirt);
+		}
 
 		// Without a farmland block there is nothing to till into.
 		if (blocks.farmBlock() == null) {
@@ -46,7 +60,10 @@ public class TerraformDirtRegistryImpl {
 							state.is(blocks.dirtPathBlock()) ||
 							state.is(blocks.farmBlock()) ||
 							state.is(blocks.grassBlock()) ||
-							state.is(blocks.podzolBlock());
+							state.is(blocks.podzolBlock()) ||
+							state.is(blocks.myceliumBlock()) ||
+							state.is(blocks.coarseDirtBlock()) ||
+							state.is(blocks.rootedDirtBlock());
 
 			if (level.isStateAtPosition(pos, isDirtLike)) {
 				return Optional.of(blocks);
@@ -62,5 +79,9 @@ public class TerraformDirtRegistryImpl {
 
 	public static Optional<DirtBlocks> getByFarmBlock(Block farmBlock) {
 		return Optional.ofNullable(BY_FARM_BLOCK.get(farmBlock));
+	}
+
+	public static Optional<DirtBlocks> getByMyceliumBlock(Block myceliumBlock) {
+		return Optional.ofNullable(BY_MYCELIUM_BLOCK.get(myceliumBlock));
 	}
 }

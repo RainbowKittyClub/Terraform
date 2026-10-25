@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.Block;
 @SuppressWarnings("unused")
 public final class TerraformDirtBlockTags {
 	/**
-	 * Dirts, grass blocks, and podzol.
+	 * Dirts, grass blocks, mycelium, podzol, coarse dirt, and rooted dirt.
 	 */
 	public static final TagKey<Block> SOIL = register("soil");
 	public static final TagKey<Block> GRASS_BLOCKS = register("grass_blocks");

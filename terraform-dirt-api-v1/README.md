@@ -1,13 +1,13 @@
 # Terraform Dirt API v1
 
-The Terraform Dirt API allows the easy definition of new dirt types, including blocks for dirt, grass blocks, grass paths, podzol, and farmland. It's what Terrestria uses to ensure that Andisol behaves as players would expect.
+The Terraform Dirt API allows the easy definition of new dirt types, including blocks for dirt, grass blocks, mycelium, grass paths, podzol, coarse dirt, rooted dirt, and farmland. It's what Terrestria uses to ensure that Andisol behaves as players would expect.
 
 ## Usage
 
 1. Bring `terraform-dirt-api-v1` into your workspace by adding the Terraformers Maven to your project, and add the appropriate dependency lines in Gradle.
 2. Create a new `DirtBlocks` object containing all of the associated block types of a dirt type.
 	* Note that you should probably take this as an opportunity to add custom grass, podzol, and farmland: passing `null`, vanilla, or shared blocks to the DirtBlocks constructor is currently not fully supported.
-3. Add your dirt, grass blocks, and podzol to the `terraform:soil` block tag as appropriate.
+3. Add your dirt, grass blocks, mycelium, podzol, coarse dirt, and rooted dirt to the `terraform:soil` block tag as appropriate.
 4. Add your grass blocks to the `terraform:grass_blocks` block tag.
 5. Add your farmland blocks to the `terraform:farmland` block tag.
 
@@ -26,5 +26,7 @@ Here's what the Terraform Dirt API does for you:
 * Allows pumpkin stems, crops, and similar to be planted on top of your custom farmland
 * Allows rabbits to eat carrots that are growing on custom farmland
 * Allows custom grass spread
+* Allows custom mycelium spread, and stops vanilla mycelium from turning your dirt into custom grass
+* Ensures that hoes turn your coarse dirt and rooted dirt into the appropriate dirt block
 * Allows sugar cane to be planted on top of your soil blocks
 * Finally, ensures that trees growing on custom soil revert the soil block to the appropriate dirt block
